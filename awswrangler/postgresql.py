@@ -372,21 +372,21 @@ def to_sql(
             )
             if index:
                 df.reset_index(level=df.index.names, inplace=True)
-            column_placeholders: str = ", ".join(["%s"] * len(df.columns))
-            insertion_columns = ""
-            upsert_str = ""
+            column_placeholders: str = ', '.join(['%s'] * len(df.columns))
+            insertion_columns = ''
+            upsert_str = ''
             if use_column_names:
-                insertion_columns = f"({', '.join(df.columns)})"
-            if mode == "upsert":
-                upsert_columns = ", ".join(df.columns.map(lambda column: f"{column}=EXCLUDED.{column}"))
-                conflict_columns = ", ".join(upsert_conflict_columns)  # type: ignore
-                upsert_str = f" ON CONFLICT ({conflict_columns}) DO UPDATE SET {upsert_columns}"
+                insertion_columns = f'({", ".join(df.columns)})'
+            if mode == 'upsert':
+                upsert_columns = ', '.join(df.columns.map(lambda column: f'"{column}"=EXCLUDED."{column}"'))
+                conflict_columns = ', '.join(upsert_conflict_columns)  # type: ignore
+                upsert_str = f' ON CONFLICT ({conflict_columns}) DO UPDATE SET {upsert_columns}'
             placeholder_parameter_pair_generator = _db_utils.generate_placeholder_parameter_pairs(
                 df=df, column_placeholders=column_placeholders, chunksize=chunksize
             )
             for placeholders, parameters in placeholder_parameter_pair_generator:
                 sql: str = f'INSERT INTO "{schema}"."{table}" {insertion_columns} VALUES {placeholders}{upsert_str}'
-                _logger.debug("sql: %s", sql)
+                _logger.debug('sql: %', sql)
                 cursor.executemany(sql, (parameters,))
             con.commit()
     except Exception as ex:
