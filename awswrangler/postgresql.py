@@ -378,7 +378,7 @@ def to_sql(
             if use_column_names:
                 insertion_columns = f'({", ".join(df.columns)})'
             if mode == 'upsert':
-                upsert_columns = ', '.join(df.columns.map(lambda column: f'"{column}"=EXCLUDED."{column}"' if column != '"user"' else '{column}=EXCLUDED.{column}'))
+                upsert_columns = ', '.join(df.columns.map(lambda column: f'"{column}"=EXCLUDED."{column}"' if column != '"user"' else f'{column}=EXCLUDED.{column}'))
                 conflict_columns = ', '.join(upsert_conflict_columns)  # type: ignore
                 upsert_str = f' ON CONFLICT ({conflict_columns}) DO UPDATE SET {upsert_columns}'
             placeholder_parameter_pair_generator = _db_utils.generate_placeholder_parameter_pairs(
